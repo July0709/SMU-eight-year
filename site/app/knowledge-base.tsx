@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { notes, type NoteKind, type NoteRecord } from "./notes-data";
 import MarkdownArticle from "./components/markdown-article";
 import ImageViewer from "./components/image-viewer";
@@ -75,6 +75,105 @@ function getSnippet(content: string, term: string, maxLength = 120): string {
   if (start > 0) snippet = "…" + snippet;
   if (end < content.length) snippet = snippet + "…";
   return snippet;
+}
+
+function KnowledgeConstellation() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    let frame = 0;
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    const pointer = { x: -1000, y: -1000 };
+    const colors = ["#8052ff", "#ffb829", "#31d6b5", "#d65cff", "#4f8cff"];
+    const particles = Array.from({ length: 380 }, (_, index) => {
+      const angle = index * 2.399963;
+      const radius = Math.sqrt(index / 380);
+      const lobe = 0.76 + 0.2 * Math.sin(angle * 2) + 0.08 * Math.cos(angle * 5);
+      return {
+        nx: Math.cos(angle) * radius * lobe,
+        ny: Math.sin(angle) * radius * (0.68 + 0.1 * Math.cos(angle * 3)),
+        phase: Math.random() * Math.PI * 2,
+        size: 0.8 + Math.random() * 1.8,
+        color: colors[index % colors.length],
+      };
+    });
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = rect.width;
+      height = rect.height;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    const move = (event: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      pointer.x = event.clientX - rect.left;
+      pointer.y = event.clientY - rect.top;
+    };
+    const leave = () => { pointer.x = pointer.y = -1000; };
+    const draw = (time: number) => {
+      context.clearRect(0, 0, width, height);
+      const scale = Math.min(width, height) * 0.43;
+      const centerX = width * 0.52;
+      const centerY = height * 0.5;
+      particles.forEach((particle) => {
+        let x = centerX + particle.nx * scale + Math.sin(time * 0.0006 + particle.phase) * 3;
+        let y = centerY + particle.ny * scale + Math.cos(time * 0.0005 + particle.phase) * 3;
+        const dx = x - pointer.x;
+        const dy = y - pointer.y;
+        const distance = Math.hypot(dx, dy);
+        if (distance < 90) {
+          const force = (90 - distance) / 90;
+          x += (dx / Math.max(distance, 1)) * force * 18;
+          y += (dy / Math.max(distance, 1)) * force * 18;
+        }
+        context.save();
+        context.translate(x, y);
+        context.rotate(particle.phase + time * 0.00012);
+        context.globalAlpha = 0.42 + 0.45 * Math.sin(time * 0.001 + particle.phase) ** 2;
+        context.strokeStyle = particle.color;
+        context.lineWidth = 0.75;
+        context.beginPath();
+        context.moveTo(0, -particle.size * 1.7);
+        context.lineTo(particle.size * 1.5, particle.size);
+        context.lineTo(-particle.size * 1.5, particle.size);
+        context.closePath();
+        context.stroke();
+        context.restore();
+      });
+      frame = requestAnimationFrame(draw);
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
+    canvas.addEventListener("pointermove", move);
+    canvas.addEventListener("pointerleave", leave);
+    frame = requestAnimationFrame(draw);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", resize);
+      canvas.removeEventListener("pointermove", move);
+      canvas.removeEventListener("pointerleave", leave);
+    };
+  }, []);
+
+  return (
+    <div className="constellation" aria-hidden="true">
+      <canvas ref={canvasRef} />
+      <span className="orbit orbit-one" />
+      <span className="orbit orbit-two" />
+      <span className="constellation-caption">KNOWLEDGE, CONNECTED</span>
+    </div>
+  );
 }
 
 function NoteCard({
@@ -166,10 +265,6 @@ function NoteViewer({
 
   const imageUrls = note.seriesUrls ?? (note.kind === "image" ? [note.url] : []);
   const [seriesIndex, setSeriesIndex] = useState(0);
-
-  useEffect(() => {
-    setSeriesIndex(0);
-  }, [note.id]);
 
   return (
     <div
@@ -335,9 +430,7 @@ export default function KnowledgeBase() {
     <main>
       <header className="site-header">
         <a className="brand" href="#top" aria-label="返回首页">
-          <span className="brand-mark">
-            <i /><i />
-          </span>
+          <span className="brand-mark"><i /><i /><i /></span>
           <span>
             <b>南医八年</b>
             <small>Medical Archive</small>
@@ -355,37 +448,28 @@ export default function KnowledgeBase() {
       <section className="hero" id="top">
         <div className="hero-inner">
           <div className="hero-copy">
-            <span className="eyebrow"> Southern Medical University · Study Notes </span>
+            <span className="eyebrow"> 2018—2026 · A MEDICAL LEARNING JOURNEY </span>
             <h1>
-              让医学知识
+              八年求索，
               <br />
-              <em>有迹可循。</em>
+              <em>让知识彼此照亮。</em>
             </h1>
             <p>
-              把八年医学学习中的课程笔记、影像资料与临床思维，整理成一座清晰、可检索、随时可回看的个人知识库。
+              从第一张解剖图，到一次次临床判断。这里收拢八年医学学习中散落的笔记、影像与思考，让每一次回看都离答案更近一步。
             </p>
             <a className="primary-cta" href="#library">
               开始查阅 <span>→</span>
             </a>
           </div>
 
-          <div className="hero-stats-card">
-            <div className="panel-label">Archive Index / 01</div>
-            <div className="hero-stats">
-              <div>
-                <strong>{String(notes.length).padStart(3, "0")}</strong>
-                <span>份资料</span>
-              </div>
-              <div>
-                <strong>{stats.images}</strong>
-                <span>张图像</span>
-              </div>
-              <div>
-                <strong>{stats.systems}</strong>
-                <span>大模块</span>
-              </div>
-            </div>
-          </div>
+          <KnowledgeConstellation />
+        </div>
+        <div className="hero-index" aria-label="资料概览">
+          <span>ARCHIVE / 01</span>
+          <p><b>{String(notes.length).padStart(3, "0")}</b> 份资料</p>
+          <p><b>{stats.images}</b> 张图像</p>
+          <p><b>{stats.systems}</b> 个知识模块</p>
+          <span className="scroll-cue">SCROLL TO EXPLORE ↓</span>
         </div>
       </section>
 
@@ -394,8 +478,8 @@ export default function KnowledgeBase() {
           <div className="section-heading">
             <div>
               <span>01 / Systems</span>
-              <h2>按系统建立知识坐标</h2>
-              <p>从器官系统到临床技能，让每份资料都回到它应在的位置。</p>
+              <h2>碎片很多。<br />但知识应当连成系统。</h2>
+              <p>从器官系统到临床技能，让每份资料回到它应在的位置，也让曾经孤立的知识点彼此产生联系。</p>
             </div>
           </div>
 
@@ -429,7 +513,7 @@ export default function KnowledgeBase() {
           <div className="section-heading">
             <div>
               <span>02 / Library</span>
-              <h2>资料库</h2>
+              <h2>找到此刻<br />真正需要的答案。</h2>
               <p>检索标题、知识点与正文内容。按 / 或 Ctrl+K 快速聚焦搜索。</p>
             </div>
           </div>
@@ -561,6 +645,7 @@ export default function KnowledgeBase() {
 
       {activeNote && (
         <NoteViewer
+          key={activeNote.id}
           note={activeNote}
           filtered={filtered}
           onClose={() => {
