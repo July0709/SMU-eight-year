@@ -79,6 +79,7 @@ function getSnippet(content: string, term: string, maxLength = 120): string {
 
 function KnowledgeConstellation() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [chapter, setChapter] = useState(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -90,17 +91,63 @@ function KnowledgeConstellation() {
     let width = 0;
     let height = 0;
     let dpr = 1;
+    let targetProgress = 0;
+    let progress = 0;
     const pointer = { x: -1000, y: -1000 };
     const colors = ["#8052ff", "#ffb829", "#31d6b5", "#d65cff", "#4f8cff"];
-    const particles = Array.from({ length: 380 }, (_, index) => {
-      const angle = index * 2.399963;
-      const radius = Math.sqrt(index / 380);
-      const lobe = 0.76 + 0.2 * Math.sin(angle * 2) + 0.08 * Math.cos(angle * 5);
+    const particleCount = 1100;
+
+    const pointOnShape = (index: number, shape: number) => {
+      const u = index / particleCount;
+      const lane = ((index * 17) % 13 - 6) / 160;
+      if (shape === 0) {
+        if (u < .18) {
+          const t = u / .18;
+          return { x: -.58 + .13 * Math.sin(t * Math.PI), y: -.72 + t * .76, z: lane };
+        }
+        if (u < .36) {
+          const t = (u - .18) / .18;
+          return { x: .58 - .13 * Math.sin(t * Math.PI), y: -.72 + t * .76, z: lane };
+        }
+        if (u < .68) {
+          const t = (u - .36) / .32;
+          const angle = Math.PI * (1 - t);
+          return { x: .51 * Math.cos(angle), y: .02 + .56 * Math.sin(angle), z: lane * 1.6 };
+        }
+        if (u < .84) {
+          const t = (u - .68) / .16;
+          return { x: .04 + t * .27, y: .54 + t * .18, z: lane };
+        }
+        const angle = ((u - .84) / .16) * Math.PI * 2;
+        return { x: .34 + Math.cos(angle) * .18, y: .73 + Math.sin(angle) * .18, z: lane * .5 };
+      }
+      if (shape === 1) {
+        if (u < .78) {
+          const t = u / .78;
+          return { x: -.62 + t * 1.18 + lane * 1.3, y: .65 - t * 1.3 + lane * 1.3, z: lane };
+        }
+        const angle = ((u - .78) / .22) * Math.PI * 2;
+        return { x: .57 + Math.cos(angle) * .2, y: -.68 + Math.sin(angle) * .27, z: lane };
+      }
+      if (u < .72) {
+        const t = u / .72;
+        const side = index % 2 ? 1 : -1;
+        return { x: -.56 + t * 1.02 + side * .12, y: .65 - t * 1.12 + side * .1, z: lane };
+      }
+      if (u < .9) {
+        const t = (u - .72) / .18;
+        return { x: .46 + (t - .5) * .25, y: -.47 - Math.abs(t - .5) * .42, z: lane };
+      }
+      const t = (u - .9) / .1;
+      return { x: -.63 + t * .22, y: .72 - t * .23, z: lane };
+    };
+    const smooth = (value: number) => value * value * (3 - 2 * value);
+    const particles = Array.from({ length: particleCount }, (_, index) => {
+      const start = pointOnShape(index, 0);
       return {
-        nx: Math.cos(angle) * radius * lobe,
-        ny: Math.sin(angle) * radius * (0.68 + 0.1 * Math.cos(angle * 3)),
+        targets: [start, pointOnShape(index, 1), pointOnShape(index, 2)],
         phase: Math.random() * Math.PI * 2,
-        size: 0.8 + Math.random() * 1.8,
+        size: 0.65 + Math.random() * 1.55,
         color: colors[index % colors.length],
       };
     });
@@ -120,14 +167,30 @@ function KnowledgeConstellation() {
       pointer.y = event.clientY - rect.top;
     };
     const leave = () => { pointer.x = pointer.y = -1000; };
+    const scroll = () => {
+      const hero = document.querySelector<HTMLElement>(".hero");
+      if (!hero) return;
+      const rect = hero.getBoundingClientRect();
+      targetProgress = Math.min(1, Math.max(0, -rect.top / Math.max(1, rect.height - window.innerHeight)));
+      setChapter(targetProgress < .28 ? 0 : targetProgress < .72 ? 1 : 2);
+    };
     const draw = (time: number) => {
       context.clearRect(0, 0, width, height);
-      const scale = Math.min(width, height) * 0.43;
+      progress += (targetProgress - progress) * .075;
+      const segment = Math.min(1, progress * 2);
+      const shapeIndex = progress < .5 ? 0 : 1;
+      const mix = smooth(progress < .5 ? segment : (progress - .5) * 2);
+      const scale = Math.min(width, height) * 0.49;
       const centerX = width * 0.52;
       const centerY = height * 0.5;
       particles.forEach((particle) => {
-        let x = centerX + particle.nx * scale + Math.sin(time * 0.0006 + particle.phase) * 3;
-        let y = centerY + particle.ny * scale + Math.cos(time * 0.0005 + particle.phase) * 3;
+        const from = particle.targets[shapeIndex];
+        const to = particle.targets[shapeIndex + 1];
+        const scatter = Math.sin(mix * Math.PI) * Math.sin(particle.phase * 3) * .18;
+        const nx = from.x + (to.x - from.x) * mix + scatter;
+        const ny = from.y + (to.y - from.y) * mix + Math.cos(particle.phase * 2) * scatter;
+        let x = centerX + (nx + from.z) * scale + Math.sin(time * 0.0006 + particle.phase) * 2.4;
+        let y = centerY + (ny + from.z) * scale + Math.cos(time * 0.0005 + particle.phase) * 2.4;
         const dx = x - pointer.x;
         const dy = y - pointer.y;
         const distance = Math.hypot(dx, dy);
@@ -154,13 +217,16 @@ function KnowledgeConstellation() {
     };
 
     resize();
+    scroll();
     window.addEventListener("resize", resize);
+    window.addEventListener("scroll", scroll, { passive: true });
     canvas.addEventListener("pointermove", move);
     canvas.addEventListener("pointerleave", leave);
     frame = requestAnimationFrame(draw);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", scroll);
       canvas.removeEventListener("pointermove", move);
       canvas.removeEventListener("pointerleave", leave);
     };
@@ -169,9 +235,18 @@ function KnowledgeConstellation() {
   return (
     <div className="constellation" aria-hidden="true">
       <canvas ref={canvasRef} />
-      <span className="orbit orbit-one" />
-      <span className="orbit orbit-two" />
-      <span className="constellation-caption">KNOWLEDGE, CONNECTED</span>
+      <div className="morph-steps">
+        {[
+          ["01", "听诊", "LISTEN"],
+          ["02", "叩诊", "DISCOVER"],
+          ["03", "记录", "REMEMBER"],
+        ].map((item, index) => (
+          <span key={item[0]} className={chapter === index ? "active" : ""}>
+            <i>{item[0]}</i><b>{item[1]}</b><small>{item[2]}</small>
+          </span>
+        ))}
+      </div>
+      <span className="constellation-caption">SCROLL TO MORPH · {chapter + 1} / 3</span>
     </div>
   );
 }
