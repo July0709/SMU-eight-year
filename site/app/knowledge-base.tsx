@@ -4,10 +4,10 @@ import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from
 import { notes, type NoteKind, type NoteRecord } from "./notes-data";
 
 const categoryMeta: Record<string, { code: string; description: string; accent: string }> = {
-  循环系统: { code: "CV", description: "心衰、高血压、瓣膜与血管", accent: "#5266eb" },
-  呼吸系统: { code: "RS", description: "内科、病生与影像辨识", accent: "#6b7fd9" },
-  消化系统: { code: "GI", description: "内外科、药理与机制", accent: "#8a96f5" },
-  临床技能模块二: { code: "CS", description: "临床思维、检验与操作", accent: "#4a5ed4" },
+  循环系统: { code: "CV", description: "心衰、高血压、瓣膜与血管", accent: "#e95d4f" },
+  呼吸系统: { code: "RS", description: "内科、病生与影像辨识", accent: "#249f91" },
+  消化系统: { code: "GI", description: "内外科、药理与机制", accent: "#d59b35" },
+  临床技能模块二: { code: "CS", description: "临床思维、检验与操作", accent: "#6977c9" },
 };
 
 const kindLabel: Record<NoteKind, string> = {
