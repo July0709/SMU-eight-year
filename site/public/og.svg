@@ -1,0 +1,40 @@
+<svg width="1536" height="1024" viewBox="0 0 1536 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f8fafc" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1536" height="1024" fill="url(#bg)" />
+
+  <!-- Top accent -->
+  <rect x="100" y="100" width="56" height="7" rx="3.5" fill="#0d9488" />
+
+  <!-- Brand mark -->
+  <rect x="72" y="156" width="56" height="56" rx="12" fill="#0d9488" />
+  <path d="M100 170v28M86 184h28" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" />
+
+  <!-- Main title -->
+  <text x="100" y="340" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="108" font-weight="700" fill="#0f172a" letter-spacing="-0.02em">
+    南医八年
+  </text>
+
+  <!-- Subtitle -->
+  <text x="100" y="415" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="40" font-weight="400" fill="#475569">
+    医学学习知识库 · 让医学知识有迹可循
+  </text>
+
+  <!-- Decorative card -->
+  <rect x="936" y="170" width="500" height="540" rx="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
+  <rect x="986" y="240" width="150" height="16" rx="8" fill="#0d9488" />
+  <rect x="986" y="300" width="400" height="12" rx="6" fill="#e2e8f0" />
+  <rect x="986" y="340" width="350" height="12" rx="6" fill="#e2e8f0" />
+  <rect x="986" y="380" width="390" height="12" rx="6" fill="#e2e8f0" />
+  <rect x="986" y="450" width="200" height="56" rx="28" fill="#0d9488" />
+
+  <!-- Footer label -->
+  <text x="100" y="900" font-family="ui-monospace, SF Mono, Menlo, monospace" font-size="18" font-weight="400" fill="#64748b" letter-spacing="0.14em" text-transform="uppercase">
+    MEDICAL ARCHIVE · SOUTHERN MEDICAL UNIVERSITY
+  </text>
+</svg>
