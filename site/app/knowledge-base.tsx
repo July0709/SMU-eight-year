@@ -168,10 +168,8 @@ function KnowledgeConstellation() {
     };
     const leave = () => { pointer.x = pointer.y = -1000; };
     const scroll = () => {
-      const hero = document.querySelector<HTMLElement>(".hero");
-      if (!hero) return;
-      const rect = hero.getBoundingClientRect();
-      targetProgress = Math.min(1, Math.max(0, -rect.top / Math.max(1, rect.height - window.innerHeight)));
+      const scrollRange = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      targetProgress = Math.min(1, Math.max(0, window.scrollY / scrollRange));
       setChapter(targetProgress < .28 ? 0 : targetProgress < .72 ? 1 : 2);
     };
     const draw = (time: number) => {
@@ -181,8 +179,8 @@ function KnowledgeConstellation() {
       const shapeIndex = progress < .5 ? 0 : 1;
       const mix = smooth(progress < .5 ? segment : (progress - .5) * 2);
       const scale = Math.min(width, height) * 0.49;
-      const centerX = width * 0.52;
-      const centerY = height * 0.5;
+      const centerX = width * (0.52 + Math.sin(progress * Math.PI * 2) * .09);
+      const centerY = height * (0.5 + Math.sin(progress * Math.PI) * .06);
       particles.forEach((particle) => {
         const from = particle.targets[shapeIndex];
         const to = particle.targets[shapeIndex + 1];
@@ -220,15 +218,15 @@ function KnowledgeConstellation() {
     scroll();
     window.addEventListener("resize", resize);
     window.addEventListener("scroll", scroll, { passive: true });
-    canvas.addEventListener("pointermove", move);
-    canvas.addEventListener("pointerleave", leave);
+    window.addEventListener("pointermove", move);
+    document.documentElement.addEventListener("pointerleave", leave);
     frame = requestAnimationFrame(draw);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", scroll);
-      canvas.removeEventListener("pointermove", move);
-      canvas.removeEventListener("pointerleave", leave);
+      window.removeEventListener("pointermove", move);
+      document.documentElement.removeEventListener("pointerleave", leave);
     };
   }, []);
 
@@ -520,6 +518,8 @@ export default function KnowledgeBase() {
         </nav>
       </header>
 
+      <KnowledgeConstellation />
+
       <section className="hero" id="top">
         <div className="hero-inner">
           <div className="hero-copy">
@@ -537,7 +537,6 @@ export default function KnowledgeBase() {
             </a>
           </div>
 
-          <KnowledgeConstellation />
         </div>
         <div className="hero-index" aria-label="资料概览">
           <span>ARCHIVE / 01</span>

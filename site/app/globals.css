@@ -1188,8 +1188,8 @@ main { overflow: hidden; }
 .status i { background: #fff; }
 
 .hero {
-  height: 300svh;
-  min-height: 2100px;
+  height: 100svh;
+  min-height: 700px;
   padding: 0 28px;
   background: #000;
   border: 0;
@@ -1201,7 +1201,7 @@ main { overflow: hidden; }
   background: radial-gradient(circle, rgba(128,82,255,.12), transparent 62%); pointer-events: none;
 }
 .hero-inner {
-  position: sticky; top: 0; height: 100svh; min-height: 650px;
+  position: relative; height: 100svh; min-height: 650px;
   grid-template-columns: 1.05fr .95fr; gap: 20px; padding: 120px 0 82px;
 }
 .hero-copy { position: relative; z-index: 2; }
@@ -1212,7 +1212,10 @@ h1 em { color: #fff; font-style: normal; }
 .primary-cta { background: var(--accent); padding: 14px 20px; box-shadow: none; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
 .primary-cta:hover { background: var(--accent-hover); box-shadow: none; transform: translateY(-2px); }
 
-.constellation { height: min(650px, 65vw); min-height: 480px; position: relative; margin-right: -6vw; }
+.constellation {
+  position: fixed; z-index: 0; right: 0; top: 0; width: 55vw; height: 100svh;
+  min-height: 480px; margin: 0; pointer-events: none;
+}
 .constellation canvas { width: 100%; height: 100%; display: block; filter: drop-shadow(0 0 12px rgba(128,82,255,.25)); }
 .orbit { position: absolute; border: 1px solid rgba(255,255,255,.08); border-radius: 50%; pointer-events: none; }
 .orbit-one { width: 72%; aspect-ratio: 1; left: 15%; top: 14%; animation: orbit-pulse 7s ease-in-out infinite; }
@@ -1229,7 +1232,9 @@ h1 em { color: #fff; font-style: normal; }
 .hero-index b { color: #fff; font-size: 18px; font-weight: 400; margin-right: 4px; }
 .scroll-cue { margin-left: auto; }
 
-.section { padding: 140px 28px; background: #000; }
+.hero, .section, footer { position: relative; z-index: 1; }
+.hero { background: transparent; }
+.section { padding: 140px 28px; background: rgba(0, 0, 0, .78); }
 .section-heading { display: grid; grid-template-columns: 1.25fr .75fr; margin-bottom: 76px; }
 .section-heading > div { display: contents; }
 .section-heading span { grid-column: 1 / -1; color: #ffb829; margin-bottom: 22px; letter-spacing: .15em; }
@@ -1247,7 +1252,7 @@ h1 em { color: #fff; font-style: normal; }
 .system-card:hover .system-count b { transform: translateX(5px); }
 .system-count b { transition: transform .25s; }
 
-.library { background: #070707; border: 0; }
+.library { background: rgba(7, 7, 7, .9); border: 0; }
 .library-toolbar { align-items: stretch; margin-bottom: 24px; }
 .search-box { height: 62px; background: #111; border-color: #292929; border-radius: 24px; }
 .search-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(128,82,255,.12); }
@@ -1268,7 +1273,7 @@ h1 em { color: #fff; font-style: normal; }
 .results-meta { border-color: #292929; }
 .search-highlight { background: #ffb829; color: #000; }
 
-footer { background: #000; border-color: #222; padding: 70px 28px; }
+footer { background: rgba(0, 0, 0, .86); border-color: #222; padding: 70px 28px; }
 .footer-brand { font-weight: 400; }
 
 @keyframes orbit-pulse { 50% { transform: scale(1.04); opacity: .35; } }
@@ -1284,11 +1289,11 @@ footer { background: #000; border-color: #222; padding: 70px 28px; }
 @media (max-width: 768px) {
   .site-header { height: 72px; position: absolute; }
   .status { display: none; }
-  .hero { padding: 0 18px; min-height: 1800px; }
+  .hero { padding: 0 18px; min-height: 700px; }
   .hero-inner { display: block; min-height: 640px; padding: 100px 0 76px; }
   .hero-copy { max-width: 92%; }
   h1 { font-size: clamp(52px, 15vw, 76px); }
-  .constellation { position: absolute; left: -7.5%; bottom: 45px; width: 115%; height: 48%; min-height: 300px; margin: 0; opacity: .88; }
+  .constellation { position: fixed; left: auto; right: -12%; top: 29%; bottom: auto; width: 105%; height: 58%; min-height: 300px; margin: 0; opacity: .78; }
   .morph-steps { left: 8%; top: 49%; }
   .constellation-caption { right: 8%; bottom: 4%; }
   .hero-index { left: 18px; right: 18px; top: calc(100svh - 64px); gap: 16px; flex-wrap: wrap; }
