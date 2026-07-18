@@ -53,7 +53,18 @@ export default function MarkdownArticle({
     });
 
     const withMath = processMath(raw);
-    const html = (marked(withMath, { async: false }) as string).replace(/<img\b/g, '<img class="inline-note-image"');
+    const slugCounts = new Map<string, number>();
+    const renderer = new marked.Renderer();
+    renderer.heading = (text, depth) => {
+      const base = text.replace(/<[^>]+>/g, "").trim().replace(/\s+/g, "-").replace(/[^\w\u4e00-\u9fff-]/g, "") || "section";
+      const count = slugCounts.get(base) ?? 0;
+      slugCounts.set(base, count + 1);
+      const id = count ? `${base}-${count + 1}` : base;
+      return `<h${depth} id="${id}">${text}</h${depth}>`;
+    };
+    const html = (marked(withMath, { async: false, renderer }) as string)
+      .replace(/<img\b/g, '<img class="inline-note-image" loading="lazy" decoding="async"')
+      .replace(/<a\s+href="(https?:[^\"]+)"/g, '<a target="_blank" rel="noopener noreferrer" href="$1"');
 
     return html;
   }, [note]);
@@ -68,10 +79,6 @@ export default function MarkdownArticle({
   };
 
   return (
-    <div
-      className="article-body"
-      onClick={handleClick}
-      dangerouslySetInnerHTML={{ __html: content }}
-    />
+    <article className="article-body" onClick={handleClick} dangerouslySetInnerHTML={{ __html: content }} />
   );
 }

@@ -254,24 +254,39 @@ function NoteCard({
   index,
   query,
   onClick,
+  favorite,
+  onToggleFavorite,
 }: {
   note: NoteRecord;
   index: number;
   query: string;
   onClick: () => void;
+  favorite: boolean;
+  onToggleFavorite: () => void;
 }) {
   const snippet = note.kind === "article" ? getSnippet(note.content, query) : "";
 
   return (
-    <button className="note-card" onClick={onClick} aria-label={`打开 ${note.title}`}>
+    <div className="note-card" role="button" tabIndex={0} onClick={onClick} onKeyDown={(event) => { if (event.key === "Enter") onClick(); }} aria-label={`打开 ${note.title}`}>
       <div className="note-header">
         <span className={`note-type type-${note.kind}`}>{kindLabel[note.kind]}</span>
         <span className="note-index">{String(index + 1).padStart(2, "0")}</span>
+        <span
+          className={`favorite-button ${favorite ? "active" : ""}`}
+          role="button"
+          tabIndex={0}
+          aria-label={favorite ? "取消收藏" : "收藏资料"}
+          aria-pressed={favorite}
+          onClick={(event) => { event.stopPropagation(); onToggleFavorite(); }}
+          onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.stopPropagation(); onToggleFavorite(); } }}
+        >{favorite ? "★" : "☆"}</span>
       </div>
 
       {note.kind === "image" && note.thumbUrl && (
         <span className="note-thumb">
-          <img src={note.thumbUrl} alt="" loading="lazy" width={480} height={360} />
+          {/* Generated local thumbnails do not need the Next image service. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={note.thumbUrl} alt="" loading="lazy" decoding="async" width={480} height={360} />
         </span>
       )}
       {note.kind === "image" && !note.thumbUrl && (
@@ -300,7 +315,7 @@ function NoteCard({
       <span className="note-open">
         打开 <b>→</b>
       </span>
-    </button>
+    </div>
   );
 }
 
@@ -318,12 +333,14 @@ function NoteViewer({
   const next = currentIndex < filtered.length - 1 ? filtered[currentIndex + 1] : null;
   const contentRef = useRef<HTMLDivElement>(null);
   const [inlineImage, setInlineImage] = useState<{ src: string; alt: string } | null>(null);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    const previousFocus = document.activeElement as HTMLElement | null;
     const close = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
-      if (event.key === "ArrowLeft" && prev) window.location.hash = getNoteHash(prev.id);
-      if (event.key === "ArrowRight" && next) window.location.hash = getNoteHash(next.id);
+      if (note.kind !== "image" && event.key === "ArrowLeft" && prev) window.location.hash = getNoteHash(prev.id);
+      if (note.kind !== "image" && event.key === "ArrowRight" && next) window.location.hash = getNoteHash(next.id);
     };
     document.addEventListener("keydown", close);
     document.body.classList.add("viewer-open");
@@ -331,13 +348,19 @@ function NoteViewer({
     return () => {
       document.removeEventListener("keydown", close);
       document.body.classList.remove("viewer-open");
+      previousFocus?.focus({ preventScroll: true });
     };
-  }, [note.id, onClose, prev, next]);
+  }, [note.id, note.kind, onClose, prev, next]);
 
   const openOriginal = () => window.open(note.url, "_blank", "noopener,noreferrer");
 
   const imageUrls = note.seriesUrls ?? (note.kind === "image" ? [note.url] : []);
   const [seriesIndex, setSeriesIndex] = useState(0);
+
+  const updateProgress = (element: HTMLDivElement) => {
+    const range = element.scrollHeight - element.clientHeight;
+    setProgress(range > 0 ? Math.min(100, Math.round((element.scrollTop / range) * 100)) : 100);
+  };
 
   return (
     <div
@@ -350,6 +373,7 @@ function NoteViewer({
       }}
     >
       <section className={`viewer viewer-${note.kind}`} tabIndex={-1} ref={contentRef}>
+        <div className="reading-progress" style={{ width: `${progress}%` }} aria-hidden="true" />
         <header className="viewer-header">
           <div>
             <span className="viewer-kicker">
@@ -364,7 +388,7 @@ function NoteViewer({
           </div>
         </header>
 
-        <div className="viewer-content">
+        <div className="viewer-content" onScroll={(event) => updateProgress(event.currentTarget)}>
           {note.kind === "article" && (
             <>
               {inlineImage ? (
@@ -396,8 +420,9 @@ function NoteViewer({
             />
           )}
           {note.kind === "pdf" && (
-            <iframe src={note.url} title={note.title} />
+            <iframe src={note.url} title={note.title} onError={(event) => { event.currentTarget.hidden = true; event.currentTarget.nextElementSibling?.removeAttribute("hidden"); }} />
           )}
+          {note.kind === "pdf" && <div className="resource-error" role="alert" hidden><b>PDF 预览加载失败</b><button onClick={openOriginal}>打开原文件</button></div>}
         </div>
 
         <footer className="viewer-nav">
@@ -429,13 +454,41 @@ export default function KnowledgeBase() {
   const [category, setCategory] = useState("全部");
   const [kind, setKind] = useState<"all" | NoteKind>("all");
   const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [recentIds, setRecentIds] = useState<string[]>([]);
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [stateReady, setStateReady] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const categories = Object.keys(categoryMeta);
+  const categories = useMemo(() => Object.keys(categoryMeta), []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      try {
+        const saved = JSON.parse(localStorage.getItem("smu-archive-state") ?? "{}");
+        if (typeof saved.query === "string") setQuery(saved.query);
+        if (["全部", ...categories].includes(saved.category)) setCategory(saved.category);
+        if (["all", "article", "image", "pdf"].includes(saved.kind)) setKind(saved.kind);
+        setFavorites(new Set(Array.isArray(saved.favorites) ? saved.favorites : []));
+        setRecentIds(Array.isArray(saved.recentIds) ? saved.recentIds : []);
+      } catch { /* Ignore damaged local state. */ }
+      setStateReady(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [categories]);
+
+  useEffect(() => {
+    if (!stateReady) return;
+    localStorage.setItem("smu-archive-state", JSON.stringify({ query, category, kind, favorites: [...favorites], recentIds }));
+  }, [query, category, kind, favorites, recentIds, stateReady]);
 
   // Sync hash with active note.
   useEffect(() => {
-    const sync = () => setActiveNoteId(parseNoteHash());
+    const sync = () => {
+      const id = parseNoteHash();
+      setActiveNoteId(id);
+      if (id && notes.some((note) => note.id === id)) setRecentIds((current) => [id, ...current.filter((item) => item !== id)].slice(0, 8));
+    };
     sync();
     window.addEventListener("hashchange", sync);
     return () => window.removeEventListener("hashchange", sync);
@@ -479,9 +532,9 @@ export default function KnowledgeBase() {
       const inCategory = category === "全部" || note.category === category;
       const inKind = kind === "all" || note.kind === kind;
       const match = !term || note.searchText.includes(term);
-      return inCategory && inKind && match;
+      return inCategory && inKind && match && (!favoritesOnly || favorites.has(note.id));
     });
-  }, [category, kind, query]);
+  }, [category, kind, query, favorites, favoritesOnly]);
 
   const activeNote = useMemo(
     () => (activeNoteId ? notes.find((note) => note.id === activeNoteId) || null : null),
@@ -497,6 +550,14 @@ export default function KnowledgeBase() {
   const setCategoryAndScroll = useCallback((name: string) => {
     setCategory(name);
     document.querySelector("#library")?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  const toggleFavorite = useCallback((id: string) => {
+    setFavorites((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
   }, []);
 
   return (
@@ -621,6 +682,9 @@ export default function KnowledgeBase() {
                 </button>
               ))}
             </div>
+            <button className={`favorites-filter ${favoritesOnly ? "active" : ""}`} onClick={() => setFavoritesOnly((value) => !value)} aria-pressed={favoritesOnly}>
+              ★ 收藏 {favorites.size}
+            </button>
           </div>
 
           <div className="category-tabs" role="tablist" aria-label="系统筛选">
@@ -692,6 +756,8 @@ export default function KnowledgeBase() {
                   index={index}
                   query={query}
                   onClick={() => (window.location.hash = getNoteHash(note.id))}
+                  favorite={favorites.has(note.id)}
+                  onToggleFavorite={() => toggleFavorite(note.id)}
                 />
               ))}
             </div>
@@ -701,6 +767,17 @@ export default function KnowledgeBase() {
               <h3>没有找到匹配资料</h3>
               <p>换一个关键词或重置筛选试试。</p>
               <button onClick={resetFilters}>重置筛选</button>
+            </div>
+          )}
+          {!query && !favoritesOnly && recentIds.length > 0 && (
+            <div className="recent-strip" aria-label="最近浏览">
+              <span>最近浏览</span>
+              {recentIds.flatMap((id) => {
+                const note = notes.find((item) => item.id === id);
+                return note ? [note] : [];
+              }).map((note) => (
+                <button key={note.id} onClick={() => (window.location.hash = getNoteHash(note.id))}>{note.title}</button>
+              ))}
             </div>
           )}
         </div>

@@ -11,7 +11,9 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: fileURLToPath(new URL("./github-pages-dist", import.meta.url)),
-    emptyOutDir: true,
+    // Local preview servers can hold built assets open on Windows; CI always starts
+    // from a clean checkout and may safely clear the deployment directory.
+    emptyOutDir: process.env.CI === "true",
   },
   cacheDir: `${siteRoot}/node_modules/.vite-pages`,
 });

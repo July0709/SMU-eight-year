@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
@@ -14,8 +14,9 @@ const rawNotes = [];
 const articleImageRefs = new Map(); // article relative path -> Set of referenced filenames
 
 if (shouldCopy) {
-  await rm(outputRoot, { recursive: true, force: true });
-  await rm(thumbRoot, { recursive: true, force: true });
+  // Do not delete the live public tree: preview servers and antivirus software can
+  // hold individual files open on Windows. Every indexed asset is overwritten below,
+  // while the deployment output itself is recreated by Vite.
   await mkdir(outputRoot, { recursive: true });
   await mkdir(thumbRoot, { recursive: true });
 }
@@ -120,7 +121,7 @@ for (const note of rawNotes) {
   }
 }
 
-for (const [key, members] of seriesMap) {
+for (const members of seriesMap.values()) {
   if (members.length < 2) continue;
   members.sort((a, b) => a.title.localeCompare(b.title, "zh-CN", { numeric: true }));
   for (const member of members) seriesGrouped.add(member.relative);
@@ -131,6 +132,10 @@ async function generateThumbnail(note) {
   const thumbPath = makeThumbPath(note.relative);
   await mkdir(path.dirname(thumbPath), { recursive: true });
   try {
+    try {
+      await stat(thumbPath);
+      return makeThumbUrl(note.relative);
+    } catch { /* Generate a missing thumbnail. */ }
     await sharp(note.source)
       .resize({ width: 480, height: 360, fit: "cover" })
       .webp({ quality: 80 })
@@ -146,6 +151,10 @@ async function copyAsset(note) {
   if (!shouldCopy) return;
   const destination = path.join(outputRoot, note.relative);
   await mkdir(path.dirname(destination), { recursive: true });
+  try {
+    const [sourceData, destinationData] = await Promise.all([readFile(note.source), readFile(destination)]);
+    if (sourceData.equals(destinationData)) return;
+  } catch { /* Copy missing or changed assets below. */ }
   await cp(note.source, destination);
 }
 
@@ -233,5 +242,8 @@ export type NoteRecord = {
 export const notes = ${JSON.stringify(notes, null, 2)} satisfies NoteRecord[];
 `;
 
-await writeFile(path.join(siteRoot, "app", "notes-data.ts"), generated, "utf8");
+const dataModule = path.join(siteRoot, "app", "notes-data.ts");
+let existing = "";
+try { existing = await readFile(dataModule, "utf8"); } catch { /* First generation. */ }
+if (existing !== generated) await writeFile(dataModule, generated, "utf8");
 console.log(`Prepared ${notes.length} notes across ${categories.length} systems${shouldCopy ? " with public assets" : ""}.`);

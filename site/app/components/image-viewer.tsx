@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element -- viewer needs native image transforms and pointer capture */
 
 import { useEffect, useRef, useState } from "react";
 
@@ -25,15 +26,10 @@ export default function ImageViewer({
   const [rotation, setRotation] = useState(0);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const dragStart = useRef({ x: 0, y: 0, px: 0, py: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
-
-  useEffect(() => {
-    setScale(1);
-    setRotation(0);
-    setPosition({ x: 0, y: 0 });
-  }, [src]);
 
   const handleWheel = (event: React.WheelEvent) => {
     event.preventDefault();
@@ -75,6 +71,19 @@ export default function ImageViewer({
     setPosition({ x: 0, y: 0 });
   };
   const rotate = () => setRotation((r) => (r + 90) % 360);
+
+  useEffect(() => {
+    const key = (event: KeyboardEvent) => {
+      if (event.key === "+" || event.key === "=") zoomIn();
+      if (event.key === "-") zoomOut();
+      if (event.key.toLowerCase() === "r") rotate();
+      if (event.key === "0") reset();
+      if (event.key === "ArrowLeft") onSeriesPrev?.();
+      if (event.key === "ArrowRight") onSeriesNext?.();
+    };
+    document.addEventListener("keydown", key);
+    return () => document.removeEventListener("keydown", key);
+  }, [onSeriesNext, onSeriesPrev]);
   const fullscreen = () => {
     if (containerRef.current?.requestFullscreen) {
       containerRef.current.requestFullscreen().catch(() => {});
@@ -88,12 +97,14 @@ export default function ImageViewer({
       onWheel={handleWheel}
       onDoubleClick={reset}
     >
-      <img
+      {loadError ? <div className="resource-error" role="alert"><b>图像加载失败</b><span>可尝试打开原文件，或稍后重新加载。</span></div> : <img
         ref={imgRef}
         className={`focus-image ${dragging ? "grabbing" : ""}`}
         src={src}
         alt={alt}
         draggable={false}
+        onLoad={() => { setLoadError(false); reset(); }}
+        onError={() => setLoadError(true)}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -101,7 +112,7 @@ export default function ImageViewer({
         style={{
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale}) rotate(${rotation}deg)`,
         }}
-      />
+      />}
 
       {seriesCount && seriesCount > 1 && (
         <>

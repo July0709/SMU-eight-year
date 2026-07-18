@@ -8,10 +8,10 @@
   "scripts": {
     "dev": "vinext dev",
     "build": "vinext build",
-    "build:pages": "node scripts/generate-content.mjs --copy && vite build --config vite.github-pages.config.ts",
+    "build:pages": "node scripts/generate-content.mjs --copy && vite build --config vite.github-pages.config.ts --configLoader runner",
     "start": "vinext start",
-    "test": "npm run build && node --test tests/rendered-html.test.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "test": "node --test tests/rendered-html.test.mjs",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern github-pages-dist --ignore-pattern public",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
