@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { notes, type NoteKind, type NoteRecord } from "./notes-data";
 import MarkdownArticle from "./components/markdown-article";
 import ImageViewer from "./components/image-viewer";
+import ParticleStage from "./components/particle-stage";
 
 const categoryMeta: Record<string, { code: string; description: string; accent: string }> = {
   循环系统: { code: "CV", description: "心衰、高血压、瓣膜与血管", accent: "#0d9488" },
@@ -11,6 +12,49 @@ const categoryMeta: Record<string, { code: string; description: string; accent: 
   消化系统: { code: "GI", description: "内外科、药理与机制", accent: "#059669" },
   临床技能模块二: { code: "CS", description: "临床思维、检验与操作", accent: "#7c3aed" },
 };
+
+// Narrative system chapters. `id` doubles as the scroll anchor and the
+// data-chapter order must match the CHAPTERS table in particle-stage.tsx.
+const systemChapters = [
+  {
+    id: "sys-循环",
+    name: "循环系统",
+    num: "01",
+    align: "left" as const,
+    text: "心衰、高血压、瓣膜与血管——从机制到用药，把每一次心悸背后的原因讲清楚。",
+  },
+  {
+    id: "sys-呼吸",
+    name: "呼吸系统",
+    num: "02",
+    align: "right" as const,
+    text: "内科、病生与影像辨识——从一口气道的阻塞，到整张胸片的读法。",
+  },
+  {
+    id: "sys-消化",
+    name: "消化系统",
+    num: "03",
+    align: "left" as const,
+    text: "内外科、药理与机制——从腹痛鉴别，到肝硬化并发症的完整链条。",
+  },
+  {
+    id: "sys-技能",
+    name: "临床技能模块二",
+    num: "04",
+    align: "right" as const,
+    text: "临床思维、检验与操作——把床旁的每一步，练进肌肉记忆里。",
+  },
+];
+
+const railItems = [
+  ["01", "听诊"],
+  ["02", "碎片"],
+  ["03", "循环"],
+  ["04", "呼吸"],
+  ["05", "消化"],
+  ["06", "技能"],
+  ["07", "照亮"],
+];
 
 const kindLabel: Record<NoteKind, string> = {
   article: "文字笔记",
@@ -75,178 +119,6 @@ function getSnippet(content: string, term: string, maxLength = 120): string {
   if (start > 0) snippet = "…" + snippet;
   if (end < content.length) snippet = snippet + "…";
   return snippet;
-}
-
-function KnowledgeConstellation() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [chapter, setChapter] = useState(0);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const context = canvas.getContext("2d");
-    if (!context) return;
-
-    let frame = 0;
-    let width = 0;
-    let height = 0;
-    let dpr = 1;
-    let targetProgress = 0;
-    let progress = 0;
-    const pointer = { x: -1000, y: -1000 };
-    const colors = ["#8052ff", "#ffb829", "#31d6b5", "#d65cff", "#4f8cff"];
-    const particleCount = 1100;
-
-    const pointOnShape = (index: number, shape: number) => {
-      const u = index / particleCount;
-      const lane = ((index * 17) % 13 - 6) / 160;
-      if (shape === 0) {
-        if (u < .18) {
-          const t = u / .18;
-          return { x: -.58 + .13 * Math.sin(t * Math.PI), y: -.72 + t * .76, z: lane };
-        }
-        if (u < .36) {
-          const t = (u - .18) / .18;
-          return { x: .58 - .13 * Math.sin(t * Math.PI), y: -.72 + t * .76, z: lane };
-        }
-        if (u < .68) {
-          const t = (u - .36) / .32;
-          const angle = Math.PI * (1 - t);
-          return { x: .51 * Math.cos(angle), y: .02 + .56 * Math.sin(angle), z: lane * 1.6 };
-        }
-        if (u < .84) {
-          const t = (u - .68) / .16;
-          return { x: .04 + t * .27, y: .54 + t * .18, z: lane };
-        }
-        const angle = ((u - .84) / .16) * Math.PI * 2;
-        return { x: .34 + Math.cos(angle) * .18, y: .73 + Math.sin(angle) * .18, z: lane * .5 };
-      }
-      if (shape === 1) {
-        if (u < .78) {
-          const t = u / .78;
-          return { x: -.62 + t * 1.18 + lane * 1.3, y: .65 - t * 1.3 + lane * 1.3, z: lane };
-        }
-        const angle = ((u - .78) / .22) * Math.PI * 2;
-        return { x: .57 + Math.cos(angle) * .2, y: -.68 + Math.sin(angle) * .27, z: lane };
-      }
-      if (u < .72) {
-        const t = u / .72;
-        const side = index % 2 ? 1 : -1;
-        return { x: -.56 + t * 1.02 + side * .12, y: .65 - t * 1.12 + side * .1, z: lane };
-      }
-      if (u < .9) {
-        const t = (u - .72) / .18;
-        return { x: .46 + (t - .5) * .25, y: -.47 - Math.abs(t - .5) * .42, z: lane };
-      }
-      const t = (u - .9) / .1;
-      return { x: -.63 + t * .22, y: .72 - t * .23, z: lane };
-    };
-    const smooth = (value: number) => value * value * (3 - 2 * value);
-    const particles = Array.from({ length: particleCount }, (_, index) => {
-      const start = pointOnShape(index, 0);
-      return {
-        targets: [start, pointOnShape(index, 1), pointOnShape(index, 2)],
-        phase: Math.random() * Math.PI * 2,
-        size: 0.65 + Math.random() * 1.55,
-        color: colors[index % colors.length],
-      };
-    });
-
-    const resize = () => {
-      const rect = canvas.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = rect.width;
-      height = rect.height;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      context.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    const move = (event: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      pointer.x = event.clientX - rect.left;
-      pointer.y = event.clientY - rect.top;
-    };
-    const leave = () => { pointer.x = pointer.y = -1000; };
-    const scroll = () => {
-      const scrollRange = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      targetProgress = Math.min(1, Math.max(0, window.scrollY / scrollRange));
-      setChapter(targetProgress < .28 ? 0 : targetProgress < .72 ? 1 : 2);
-    };
-    const draw = (time: number) => {
-      context.clearRect(0, 0, width, height);
-      progress += (targetProgress - progress) * .075;
-      const segment = Math.min(1, progress * 2);
-      const shapeIndex = progress < .5 ? 0 : 1;
-      const mix = smooth(progress < .5 ? segment : (progress - .5) * 2);
-      const scale = Math.min(width, height) * 0.49;
-      const centerX = width * (0.52 + Math.sin(progress * Math.PI * 2) * .09);
-      const centerY = height * (0.5 + Math.sin(progress * Math.PI) * .06);
-      particles.forEach((particle) => {
-        const from = particle.targets[shapeIndex];
-        const to = particle.targets[shapeIndex + 1];
-        const scatter = Math.sin(mix * Math.PI) * Math.sin(particle.phase * 3) * .18;
-        const nx = from.x + (to.x - from.x) * mix + scatter;
-        const ny = from.y + (to.y - from.y) * mix + Math.cos(particle.phase * 2) * scatter;
-        let x = centerX + (nx + from.z) * scale + Math.sin(time * 0.0006 + particle.phase) * 2.4;
-        let y = centerY + (ny + from.z) * scale + Math.cos(time * 0.0005 + particle.phase) * 2.4;
-        const dx = x - pointer.x;
-        const dy = y - pointer.y;
-        const distance = Math.hypot(dx, dy);
-        if (distance < 90) {
-          const force = (90 - distance) / 90;
-          x += (dx / Math.max(distance, 1)) * force * 18;
-          y += (dy / Math.max(distance, 1)) * force * 18;
-        }
-        context.save();
-        context.translate(x, y);
-        context.rotate(particle.phase + time * 0.00012);
-        context.globalAlpha = 0.42 + 0.45 * Math.sin(time * 0.001 + particle.phase) ** 2;
-        context.strokeStyle = particle.color;
-        context.lineWidth = 0.75;
-        context.beginPath();
-        context.moveTo(0, -particle.size * 1.7);
-        context.lineTo(particle.size * 1.5, particle.size);
-        context.lineTo(-particle.size * 1.5, particle.size);
-        context.closePath();
-        context.stroke();
-        context.restore();
-      });
-      frame = requestAnimationFrame(draw);
-    };
-
-    resize();
-    scroll();
-    window.addEventListener("resize", resize);
-    window.addEventListener("scroll", scroll, { passive: true });
-    window.addEventListener("pointermove", move);
-    document.documentElement.addEventListener("pointerleave", leave);
-    frame = requestAnimationFrame(draw);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("scroll", scroll);
-      window.removeEventListener("pointermove", move);
-      document.documentElement.removeEventListener("pointerleave", leave);
-    };
-  }, []);
-
-  return (
-    <div className="constellation" aria-hidden="true">
-      <canvas ref={canvasRef} />
-      <div className="morph-steps">
-        {[
-          ["01", "听诊", "LISTEN"],
-          ["02", "叩诊", "DISCOVER"],
-          ["03", "记录", "REMEMBER"],
-        ].map((item, index) => (
-          <span key={item[0]} className={chapter === index ? "active" : ""}>
-            <i>{item[0]}</i><b>{item[1]}</b><small>{item[2]}</small>
-          </span>
-        ))}
-      </div>
-      <span className="constellation-caption">SCROLL TO MORPH · {chapter + 1} / 3</span>
-    </div>
-  );
 }
 
 function NoteCard({
@@ -458,9 +330,63 @@ export default function KnowledgeBase() {
   const [recentIds, setRecentIds] = useState<string[]>([]);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [stateReady, setStateReady] = useState(false);
+  const [activeChapter, setActiveChapter] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const categories = useMemo(() => Object.keys(categoryMeta), []);
+
+  // Chapter rail: same anchor logic as the particle stage (probe = scrollY + 50vh).
+  useEffect(() => {
+    let anchors: number[] = [];
+    const measure = () => {
+      anchors = Array.from(document.querySelectorAll("[data-chapter]")).map(
+        (el) => (el as HTMLElement).offsetTop
+      );
+    };
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      if (!anchors.length) return;
+      const probe = window.scrollY + window.innerHeight * 0.5;
+      let current = 0;
+      for (let k = 0; k < anchors.length; k++) {
+        if (probe >= anchors[k]) current = k;
+      }
+      setActiveChapter((prev) => (prev === current ? prev : current));
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    measure();
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
+  // Reveal chapter copy when it enters the viewport.
+  useEffect(() => {
+    const els = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.22 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -572,23 +498,40 @@ export default function KnowledgeBase() {
         </a>
         <nav aria-label="页面导航">
           <a className="nav-link" href="#library">资料库</a>
-          <a className="nav-link" href="#systems">系统索引</a>
+          <a className="nav-link" href="#sys-循环">系统索引</a>
           <span className="status">
             <i />持续整理中
           </span>
         </nav>
       </header>
 
-      <KnowledgeConstellation />
+      <ParticleStage />
 
-      <section className="hero" id="top">
+      <nav className="chapter-rail" aria-label="章节导航">
+        {railItems.map(([num, label], index) => (
+          <a
+            key={num}
+            href={["#top", "#fragment", "#sys-循环", "#sys-呼吸", "#sys-消化", "#sys-技能", "#illuminate"][index]}
+            className={activeChapter === index ? "active" : ""}
+          >
+            <i>{num}</i>
+            <b>{label}</b>
+          </a>
+        ))}
+      </nav>
+
+      <section className="hero" id="top" data-chapter>
         <div className="hero-inner">
           <div className="hero-copy">
             <span className="eyebrow"> 2018—2026 · A MEDICAL LEARNING JOURNEY </span>
             <h1>
               八年求索，
               <br />
-              <em>让知识彼此照亮。</em>
+              <em>让知识彼此</em>
+              <em className="keep">
+                照亮
+                <span className="dot">。</span>
+              </em>
             </h1>
             <p>
               从第一张解剖图，到一次次临床判断。这里收拢八年医学学习中散落的笔记、影像与思考，让每一次回看都离答案更近一步。
@@ -608,37 +551,87 @@ export default function KnowledgeBase() {
         </div>
       </section>
 
-      <section className="section" id="systems">
-        <div className="section-inner">
-          <div className="section-heading">
-            <div>
-              <span>01 / Systems</span>
-              <h2>碎片很多。<br />但知识应当连成系统。</h2>
-              <p>从器官系统到临床技能，让每份资料回到它应在的位置，也让曾经孤立的知识点彼此产生联系。</p>
-            </div>
-          </div>
+      <section className="chapter chapter-fragment" id="fragment" data-chapter>
+        <p className="fragment-copy reveal">
+          八年，上千个知识点，
+          <br />
+          散落在几十个系统与笔记本里。
+          <br />
+          <span className="fragment-turn">—— 直到它们被重新连成系统。</span>
+        </p>
+      </section>
 
-          <div className="system-grid">
-            {categories.map((name, index) => {
-              const meta = categoryMeta[name];
-              const count = notes.filter((note) => note.category === name).length;
-              return (
-                <button
-                  key={name}
-                  className="system-card"
-                  style={{ "--accent": meta.accent } as CSSProperties}
-                  onClick={() => setCategoryAndScroll(name)}
-                >
-                  <span className="system-number">0{index + 1}</span>
-                  <span className="system-code">{meta.code}</span>
-                  <strong>{name}</strong>
-                  <small>{meta.description}</small>
-                  <span className="system-count">
-                    {count} ITEMS <b>→</b>
-                  </span>
+      {systemChapters.map((chapter) => {
+        const meta = categoryMeta[chapter.name];
+        const count = notes.filter((note) => note.category === chapter.name).length;
+        return (
+          <section key={chapter.id} className="chapter system-chapter" id={chapter.id} data-chapter>
+            <div className="chapter-inner">
+              <div className={`chapter-copy reveal${chapter.align === "right" ? " right" : ""}`}>
+                <span className="chapter-tag">
+                  SYSTEM {chapter.num} / {meta.code}
+                </span>
+                <h2 className="chapter-title">
+                  {chapter.name === "临床技能模块二" ? (
+                    <>
+                      临床技能
+                      <span className="keep">
+                        模块二<span className="dot">。</span>
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      {chapter.name}
+                      <span className="dot">。</span>
+                    </>
+                  )}
+                </h2>
+                <p className="chapter-desc">{chapter.text}</p>
+                <button className="chapter-cta" onClick={() => setCategoryAndScroll(chapter.name)}>
+                  {count} 份资料 <b>→</b>
                 </button>
-              );
-            })}
+              </div>
+            </div>
+          </section>
+        );
+      })}
+
+      <section className="chapter chapter-illuminate" id="illuminate" data-chapter>
+        <div className="chapter-inner">
+          <div className="chapter-copy center reveal">
+            <span className="chapter-tag">FINALE / LIGHT</span>
+            <h2 className="chapter-title">
+              让知识彼此照亮<span className="dot">。</span>
+            </h2>
+            <div className="stat-row" aria-label="资料统计">
+              <div>
+                <b>{String(notes.length).padStart(2, "0")}</b>
+                <span>份资料</span>
+              </div>
+              <div>
+                <b>{stats.images}</b>
+                <span>张图像</span>
+              </div>
+              <div>
+                <b>{stats.systems}</b>
+                <span>个模块</span>
+              </div>
+              <div>
+                <b>{favorites.size}</b>
+                <span>份收藏</span>
+              </div>
+            </div>
+            {recentIds.length > 0 && (
+              <div className="recent-strip illuminate-recent" aria-label="最近浏览">
+                <span>最近浏览</span>
+                {recentIds.flatMap((id) => {
+                  const note = notes.find((item) => item.id === id);
+                  return note ? [note] : [];
+                }).map((note) => (
+                  <button key={note.id} onClick={() => (window.location.hash = getNoteHash(note.id))}>{note.title}</button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -648,7 +641,7 @@ export default function KnowledgeBase() {
           <div className="section-heading">
             <div>
               <span>02 / Library</span>
-              <h2>找到此刻<br />真正需要的答案。</h2>
+              <h2>找到此刻<br />真正需要的<span className="keep">答案<span className="dot">。</span></span></h2>
               <p>检索标题、知识点与正文内容。按 / 或 Ctrl+K 快速聚焦搜索。</p>
             </div>
           </div>
@@ -784,6 +777,10 @@ export default function KnowledgeBase() {
       </section>
 
       <footer>
+        <blockquote className="footer-quote">
+          <p>“我体验过了，我倾尽全力奋斗过了，我对自己算是有交代了，而我那么努力，是为了获得更自由。”</p>
+          <cite>—— 詹青云</cite>
+        </blockquote>
         <div className="footer-inner">
           <div className="footer-brand">
             南医八年
