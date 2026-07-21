@@ -523,7 +523,7 @@ export default function KnowledgeBase() {
       <section className="hero" id="top" data-chapter>
         <div className="hero-inner">
           <div className="hero-copy">
-            <span className="eyebrow"> 2018—2026 · A MEDICAL LEARNING JOURNEY </span>
+            <span className="eyebrow"> 2023–2031 · A MEDICAL LEARNING JOURNEY </span>
             <h1>
               八年求索，
               <br />

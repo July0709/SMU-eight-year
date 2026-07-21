@@ -362,6 +362,7 @@ export default function ParticleStage() {
       size: isMobile ? 0.042 : 0.034,
       map: texture ?? undefined,
       transparent: true,
+      opacity: 0, // hidden until the baked heart shape arrives (see below)
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       vertexColors: true,
@@ -441,6 +442,14 @@ export default function ParticleStage() {
 
     // Load baked organ point clouds (image-sampled positions + colors).
     let disposed = false;
+    // The hero must show the baked anatomical heart from the very first
+    // visible frame — never the procedural "cartoon heart" fallback. Keep
+    // the stage invisible until the heart bin lands (or fails / times out).
+    let heartReady = false;
+    const reveal = () => {
+      heartReady = true;
+    };
+    const revealTimer = window.setTimeout(reveal, 2500);
     const ORGAN_BINS: [ShapeName, string][] = [
       ["heart", "heart"],
       ["lungs", "lung"],
@@ -481,8 +490,13 @@ export default function ParticleStage() {
           }
           shapes[shape] = P;
           shapeColors[shape] = C;
+          if (shape === "heart") reveal();
         })
-        .catch(() => { /* keep the procedural fallback shape */ });
+        .catch(() => {
+          // Keep the procedural fallback shape; still reveal so the page
+          // never stays blank if the baked asset is missing.
+          if (shape === "heart") reveal();
+        });
     });
 
     let tSmooth = tTarget;
@@ -546,6 +560,10 @@ export default function ParticleStage() {
       const scale = reduced ? 1 : 1 + 0.045 * heartness * Math.sin(time * 2.4);
       group.scale.setScalar(scale);
 
+      // Fade the stage in once the baked heart shape (or its fallback) is
+      // ready, so the procedural cartoon heart never flashes on load.
+      material.opacity += ((heartReady ? 1 : 0) - material.opacity) * 0.08;
+
       renderer.render(scene, camera);
       raf = requestAnimationFrame(animate);
     };
@@ -558,6 +576,7 @@ export default function ParticleStage() {
     return () => {
       disposed = true;
       cancelAnimationFrame(raf);
+      window.clearTimeout(revealTimer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("pointermove", onPointer);
