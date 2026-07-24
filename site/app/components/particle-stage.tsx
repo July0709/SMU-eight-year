@@ -20,7 +20,8 @@ const CHAPTERS: { shape: ShapeName; align: Align }[] = [
   { shape: "lungs", align: "left" }, // 3 呼吸系统（文字在右）
   { shape: "stomach", align: "right" }, // 4 消化系统（文字在左）
   { shape: "brain", align: "left" }, // 5 临床技能（文字在右）
-  { shape: "bulb", align: "center" }, // 6 照亮
+  { shape: "scatter", align: "right" }, // 6 生物信息学（文字在左）
+  { shape: "bulb", align: "center" }, // 7 照亮
 ];
 
 const PALETTE = ["#8052ff", "#ffb829", "#31d6b5", "#d65cff", "#4f8cff"];

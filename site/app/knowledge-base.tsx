@@ -11,6 +11,7 @@ const categoryMeta: Record<string, { code: string; description: string; accent: 
   呼吸系统: { code: "RS", description: "内科、病生与影像辨识", accent: "#0891b2" },
   消化系统: { code: "GI", description: "内外科、药理与机制", accent: "#059669" },
   临床技能模块二: { code: "CS", description: "临床思维、检验与操作", accent: "#7c3aed" },
+  生物信息学: { code: "BI", description: "序列分析、多序列比对与差异表达", accent: "#d97706" },
 };
 
 // Narrative system chapters. `id` doubles as the scroll anchor and the
@@ -44,6 +45,13 @@ const systemChapters = [
     align: "right" as const,
     text: "临床思维、检验与操作——把床旁的每一步，练进肌肉记忆里。",
   },
+  {
+    id: "sys-生信",
+    name: "生物信息学",
+    num: "05",
+    align: "left" as const,
+    text: "序列分析、多序列比对与差异表达——让数据替你读出基因的语言。",
+  },
 ];
 
 const railItems = [
@@ -53,7 +61,8 @@ const railItems = [
   ["04", "呼吸"],
   ["05", "消化"],
   ["06", "技能"],
-  ["07", "照亮"],
+  ["07", "生信"],
+  ["08", "照亮"],
 ];
 
 const kindLabel: Record<NoteKind, string> = {

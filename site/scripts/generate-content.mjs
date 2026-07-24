@@ -6,7 +6,7 @@ const siteRoot = process.cwd();
 const repoRoot = path.resolve(siteRoot, "..");
 const outputRoot = path.join(siteRoot, "public", "library");
 const thumbRoot = path.join(siteRoot, "public", "thumbs");
-const categories = ["循环系统", "呼吸系统", "消化系统", "临床技能模块二"];
+const categories = ["循环系统", "呼吸系统", "消化系统", "临床技能模块二", "生物信息学"];
 const supported = new Set([".md", ".jpg", ".jpeg", ".png", ".pdf"]);
 const shouldCopy = process.argv.includes("--copy");
 
