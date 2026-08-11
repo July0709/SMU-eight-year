@@ -12,8 +12,21 @@ marked.use({
   pedantic: false,
 });
 
-function assetBase(note: NoteRecord) {
-  return note.url.slice(0, note.url.lastIndexOf("/") + 1);
+function resolveAssetUrl(note: NoteRecord, source: string) {
+  const cleanSource = source.replaceAll("\\", "/");
+  const suffixIndex = cleanSource.search(/[?#]/);
+  const pathname = suffixIndex === -1 ? cleanSource : cleanSource.slice(0, suffixIndex);
+  const suffix = suffixIndex === -1 ? "" : cleanSource.slice(suffixIndex);
+  const parts = note.url.split("/").slice(0, -1);
+
+  for (const rawPart of pathname.split("/")) {
+    const part = decodeURIComponent(rawPart);
+    if (!part || part === ".") continue;
+    if (part === "..") parts.pop();
+    else parts.push(encodeURIComponent(part));
+  }
+
+  return `${parts.join("/")}${suffix}`;
 }
 
 function renderMath(text: string, displayMode: boolean): string {
@@ -48,7 +61,7 @@ export default function MarkdownArticle({
     // Resolve relative image URLs to the note's asset base
     raw = raw.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, src) => {
       if (src.startsWith("http") || src.startsWith("data:")) return match;
-      const resolved = `${assetBase(note)}${encodeURIComponent(decodeURIComponent(src))}`;
+      const resolved = resolveAssetUrl(note, src);
       return `![${alt}](${resolved})`;
     });
 

@@ -45,7 +45,7 @@ function extractImageRefs(content) {
   for (const match of matches) {
     const src = match[1].trim();
     if (!src.startsWith("http") && !src.startsWith("data:")) {
-      refs.add(decodeURIComponent(path.basename(src)));
+      refs.add(decodeURIComponent(src.split(/[?#]/, 1)[0]));
     }
   }
   return refs;
@@ -102,7 +102,7 @@ for (const note of rawNotes) {
   const noteDir = path.dirname(note.relative);
   const refs = articleImageRefs.get(note.relative) || new Set();
   for (const ref of refs) {
-    attachmentSet.add(path.join(noteDir, ref).replaceAll(path.sep, "/"));
+    attachmentSet.add(path.normalize(path.join(noteDir, ref)).replaceAll(path.sep, "/"));
   }
 }
 
@@ -115,7 +115,7 @@ for (const note of rawNotes) {
   const base = note.title;
   const match = base.match(/^(.*)[-_](\d+)$/);
   if (match) {
-    const key = `${note.category}/${match[1]}`;
+    const key = `${path.dirname(note.relative)}/${match[1]}`;
     if (!seriesMap.has(key)) seriesMap.set(key, []);
     seriesMap.get(key).push(note);
   }
@@ -195,7 +195,7 @@ for (const note of rawNotes) {
 const groupedKeys = new Map();
 for (const note of seriesNotes) {
   const seriesBase = note.title.replace(/[-_]\d+$/, "").trim();
-  const key = `${note.category}/${seriesBase}`;
+  const key = `${path.dirname(note.relative)}/${seriesBase}`;
   if (!groupedKeys.has(key)) groupedKeys.set(key, { base: seriesBase, members: [] });
   groupedKeys.get(key).members.push(note);
 }

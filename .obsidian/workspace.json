@@ -1,0 +1,204 @@
+{
+  "main": {
+    "id": "89fa81469fbf3349",
+    "type": "split",
+    "children": [
+      {
+        "id": "b21e7d4067a0151b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d1571e54223137fb",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "临床技能模块二/04-原始资料/0. 临床思维训练.pdf"
+              },
+              "icon": "lucide-file-text",
+              "title": "0. 临床思维训练"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "b2e890572c405152",
+    "type": "split",
+    "children": [
+      {
+        "id": "252744fb2a99949d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "712b06c1086ddd7d",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "34fa1a51c3a3780b",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "b70fe2b3c24ec00a",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "9037f9ac1a9f9ef7",
+    "type": "split",
+    "children": [
+      {
+        "id": "654caeb10b41db69",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d8adf814465fd643",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "消化系统/PBL/PBL1-机制图.png",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "反向链接"
+            }
+          },
+          {
+            "id": "dd72b21a52daa31a",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "消化系统/PBL/PBL1-机制图.png",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "出链"
+            }
+          },
+          {
+            "id": "2030eb5a82497a2b",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "7d0536892d5d3523",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "a1540c894b28c81d",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "消化系统/PBL/PBL1-机制图.png",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "d1571e54223137fb",
+  "lastOpenFiles": [
+    "临床技能模块二/临床技能模块二.md",
+    "生物信息学/生物信息学.md",
+    "循环系统/03-复习资料/9.大题.jpg",
+    "首页.md",
+    "呼吸系统/1. 肺炎药物选择.jpg",
+    "呼吸系统/3. 医考帮、龙北国等知识点整理-6.jpg",
+    "呼吸系统/2. 呼吸系统影像学-2.jpg",
+    "临床技能模块二/0. 临床思维训练.pdf",
+    "临床技能模块二/1. 标本采集的原则.md",
+    "生物信息学/生物信息学-多序列比对.pdf",
+    "生物信息学/基因差异表达-实验任务.pdf",
+    "生物信息学/蛋白质序列可视化.pdf"
+  ]
+}
