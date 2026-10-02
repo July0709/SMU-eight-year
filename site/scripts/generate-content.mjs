@@ -6,7 +6,24 @@ const siteRoot = process.cwd();
 const repoRoot = path.resolve(siteRoot, "..");
 const outputRoot = path.join(siteRoot, "public", "library");
 const thumbRoot = path.join(siteRoot, "public", "thumbs");
-const categories = ["循环系统", "呼吸系统", "消化系统", "临床技能模块二", "生物信息学"];
+const categories = [
+  "循环系统",
+  "呼吸系统",
+  "消化系统",
+  "临床技能模块二",
+  "生物信息学",
+  "神经系统",
+  "内分泌系统",
+  "感染与防御",
+  "临床技能模块三",
+  "医学遗传学",
+  "医学心理学",
+  "医学伦理学",
+  "概率论与数理统计",
+  "毛概",
+  "有机化学",
+  "医学文献管理与检索",
+];
 const supported = new Set([".md", ".jpg", ".jpeg", ".png", ".pdf"]);
 const shouldCopy = process.argv.includes("--copy");
 

@@ -12,6 +12,17 @@ const categoryMeta: Record<string, { code: string; description: string; accent: 
   消化系统: { code: "GI", description: "内外科、药理与机制", accent: "#059669" },
   临床技能模块二: { code: "CS", description: "临床思维、检验与操作", accent: "#7c3aed" },
   生物信息学: { code: "BI", description: "序列分析、多序列比对与差异表达", accent: "#d97706" },
+  神经系统: { code: "NS", description: "神经解剖、定位与传导通路", accent: "#a855f7" },
+  内分泌系统: { code: "EN", description: "激素、代谢与调控机制", accent: "#10b981" },
+  感染与防御: { code: "ID", description: "病原、免疫与抗感染治疗", accent: "#e11d48" },
+  临床技能模块三: { code: "C3", description: "临床技能进阶训练", accent: "#9333ea" },
+  医学遗传学: { code: "MG", description: "遗传规律与分子基础", accent: "#2563eb" },
+  医学心理学: { code: "MP", description: "心理评估与医患沟通", accent: "#db2777" },
+  医学伦理学: { code: "ME", description: "伦理原则与案例分析", accent: "#ea580c" },
+  概率论与数理统计: { code: "PS", description: "概率模型与统计推断", accent: "#475569" },
+  毛概: { code: "MK", description: "理论体系与专题学习", accent: "#dc2626" },
+  有机化学: { code: "OC", description: "烃、官能团与反应机理", accent: "#65a30d" },
+  医学文献管理与检索: { code: "LR", description: "文献检索、管理与笔记方法", accent: "#0284c7" },
 };
 
 // Narrative system chapters. `id` doubles as the scroll anchor and the
