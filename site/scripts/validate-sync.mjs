@@ -79,22 +79,22 @@ try {
   console.log("tabs:", JSON.stringify(report.tabs));
   console.log("results-meta:", report.meta, "| cards rendered:", report.cards, "| hero count:", report.heroCount);
 
-  if (report.tabs.length !== 17) failures.push(`expected 17 category tabs, got ${report.tabs.length}`);
-  for (const name of ["神经系统", "内分泌系统", "感染与防御", "临床技能模块三", "医学遗传学", "医学心理学", "医学伦理学", "概率论与数理统计", "毛概", "有机化学", "医学文献管理与检索"]) {
+  if (report.tabs.length !== 18) failures.push(`expected 18 category tabs, got ${report.tabs.length}`);
+  for (const name of ["神经系统", "内分泌系统", "感染与防御", "临床技能模块三", "医学遗传学", "医学心理学", "医学伦理学", "概率论与数理统计", "毛概", "有机化学", "医学文献管理与检索", "系统解剖学"]) {
     if (!report.tabs.includes(name)) failures.push(`missing category tab: ${name}`);
   }
-  if (!report.meta?.includes("154")) failures.push(`expected RESULT / 154, got: ${report.meta}`);
+  if (!report.meta?.includes("164")) failures.push(`expected RESULT / 164, got: ${report.meta}`);
   if (report.cards < 10) failures.push(`too few cards rendered: ${report.cards}`);
 
   // Switch to a newly added category and confirm filtering works.
   await page.evaluate(() => {
-    const tab = [...document.querySelectorAll(".category-tabs button")].find((b) => b.textContent.trim() === "有机化学");
+    const tab = [...document.querySelectorAll(".category-tabs button")].find((b) => b.textContent.trim() === "系统解剖学");
     tab?.click();
   });
   await sleep(600);
   const filteredMeta = await page.evaluate(() => document.querySelector(".results-meta span")?.textContent.trim());
-  console.log("有机化学 filter:", filteredMeta);
-  if (!filteredMeta || filteredMeta.includes("154")) failures.push(`category filter did not change results: ${filteredMeta}`);
+  console.log("系统解剖学 filter:", filteredMeta);
+  if (!filteredMeta || filteredMeta.includes("164")) failures.push(`category filter did not change results: ${filteredMeta}`);
 
   // Screenshot the library section.
   await page.evaluate(() => document.querySelector(".category-tabs button")?.click());

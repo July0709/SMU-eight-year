@@ -23,6 +23,7 @@ const categories = [
   "毛概",
   "有机化学",
   "医学文献管理与检索",
+  "系统解剖学",
 ];
 const supported = new Set([".md", ".jpg", ".jpeg", ".png", ".pdf"]);
 const shouldCopy = process.argv.includes("--copy");

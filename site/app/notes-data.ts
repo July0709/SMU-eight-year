@@ -1484,6 +1484,78 @@ export const notes = [
     "searchText": "概率与数理统计练习卷 概率论与数理统计 概率论与数理统计 "
   },
   {
+    "id": "概率论与数理统计/平时作业/概率论第三章作业.pdf",
+    "category": "概率论与数理统计",
+    "section": "平时作业",
+    "title": "概率论第三章作业",
+    "fileName": "概率论第三章作业.pdf",
+    "kind": "pdf",
+    "url": "library/%E6%A6%82%E7%8E%87%E8%AE%BA%E4%B8%8E%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/%E5%B9%B3%E6%97%B6%E4%BD%9C%E4%B8%9A/%E6%A6%82%E7%8E%87%E8%AE%BA%E7%AC%AC%E4%B8%89%E7%AB%A0%E4%BD%9C%E4%B8%9A.pdf",
+    "content": "",
+    "size": 3064078,
+    "searchText": "概率论第三章作业 概率论与数理统计 平时作业 "
+  },
+  {
+    "id": "概率论与数理统计/平时作业/概率论第四章作业.pdf",
+    "category": "概率论与数理统计",
+    "section": "平时作业",
+    "title": "概率论第四章作业",
+    "fileName": "概率论第四章作业.pdf",
+    "kind": "pdf",
+    "url": "library/%E6%A6%82%E7%8E%87%E8%AE%BA%E4%B8%8E%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/%E5%B9%B3%E6%97%B6%E4%BD%9C%E4%B8%9A/%E6%A6%82%E7%8E%87%E8%AE%BA%E7%AC%AC%E5%9B%9B%E7%AB%A0%E4%BD%9C%E4%B8%9A.pdf",
+    "content": "",
+    "size": 982644,
+    "searchText": "概率论第四章作业 概率论与数理统计 平时作业 "
+  },
+  {
+    "id": "概率论与数理统计/平时作业/概率论第五章.pdf",
+    "category": "概率论与数理统计",
+    "section": "平时作业",
+    "title": "概率论第五章",
+    "fileName": "概率论第五章.pdf",
+    "kind": "pdf",
+    "url": "library/%E6%A6%82%E7%8E%87%E8%AE%BA%E4%B8%8E%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/%E5%B9%B3%E6%97%B6%E4%BD%9C%E4%B8%9A/%E6%A6%82%E7%8E%87%E8%AE%BA%E7%AC%AC%E4%BA%94%E7%AB%A0.pdf",
+    "content": "",
+    "size": 1446884,
+    "searchText": "概率论第五章 概率论与数理统计 平时作业 "
+  },
+  {
+    "id": "概率论与数理统计/平时作业/概率论作业第二章.pdf",
+    "category": "概率论与数理统计",
+    "section": "平时作业",
+    "title": "概率论作业第二章",
+    "fileName": "概率论作业第二章.pdf",
+    "kind": "pdf",
+    "url": "library/%E6%A6%82%E7%8E%87%E8%AE%BA%E4%B8%8E%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/%E5%B9%B3%E6%97%B6%E4%BD%9C%E4%B8%9A/%E6%A6%82%E7%8E%87%E8%AE%BA%E4%BD%9C%E4%B8%9A%E7%AC%AC%E4%BA%8C%E7%AB%A0.pdf",
+    "content": "",
+    "size": 2350791,
+    "searchText": "概率论作业第二章 概率论与数理统计 平时作业 "
+  },
+  {
+    "id": "概率论与数理统计/平时作业/概率论作业第七章.pdf",
+    "category": "概率论与数理统计",
+    "section": "平时作业",
+    "title": "概率论作业第七章",
+    "fileName": "概率论作业第七章.pdf",
+    "kind": "pdf",
+    "url": "library/%E6%A6%82%E7%8E%87%E8%AE%BA%E4%B8%8E%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/%E5%B9%B3%E6%97%B6%E4%BD%9C%E4%B8%9A/%E6%A6%82%E7%8E%87%E8%AE%BA%E4%BD%9C%E4%B8%9A%E7%AC%AC%E4%B8%83%E7%AB%A0.pdf",
+    "content": "",
+    "size": 697194,
+    "searchText": "概率论作业第七章 概率论与数理统计 平时作业 "
+  },
+  {
+    "id": "概率论与数理统计/平时作业/概率论P25作业2.3.5.14.16.18.21.24.26.pdf",
+    "category": "概率论与数理统计",
+    "section": "平时作业",
+    "title": "概率论P25作业2.3.5.14.16.18.21.24.26",
+    "fileName": "概率论P25作业2.3.5.14.16.18.21.24.26.pdf",
+    "kind": "pdf",
+    "url": "library/%E6%A6%82%E7%8E%87%E8%AE%BA%E4%B8%8E%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/%E5%B9%B3%E6%97%B6%E4%BD%9C%E4%B8%9A/%E6%A6%82%E7%8E%87%E8%AE%BAP25%E4%BD%9C%E4%B8%9A2.3.5.14.16.18.21.24.26.pdf",
+    "content": "",
+    "size": 1381854,
+    "searchText": "概率论p25作业2.3.5.14.16.18.21.24.26 概率论与数理统计 平时作业 "
+  },
+  {
     "id": "概率论与数理统计/总复习题（1）.pdf",
     "category": "概率论与数理统计",
     "section": "概率论与数理统计",
@@ -1569,6 +1641,18 @@ export const notes = [
     "content": "",
     "size": 305901,
     "searchText": "大题 毛概 毛概 "
+  },
+  {
+    "id": "毛概/毛泽东思想概要摘抄-July.pdf",
+    "category": "毛概",
+    "section": "毛概",
+    "title": "毛泽东思想概要摘抄-July",
+    "fileName": "毛泽东思想概要摘抄-July.pdf",
+    "kind": "pdf",
+    "url": "library/%E6%AF%9B%E6%A6%82/%E6%AF%9B%E6%B3%BD%E4%B8%9C%E6%80%9D%E6%83%B3%E6%A6%82%E8%A6%81%E6%91%98%E6%8A%84-July.pdf",
+    "content": "",
+    "size": 21416808,
+    "searchText": "毛泽东思想概要摘抄-july 毛概 毛概 "
   },
   {
     "id": "毛概/重点以及往年真题.pdf",
@@ -1787,6 +1871,18 @@ export const notes = [
     "searchText": "第17章 核酸 有机化学 大湾区习题 "
   },
   {
+    "id": "有机化学/有机化学笔记.pdf",
+    "category": "有机化学",
+    "section": "有机化学",
+    "title": "有机化学笔记",
+    "fileName": "有机化学笔记.pdf",
+    "kind": "pdf",
+    "url": "library/%E6%9C%89%E6%9C%BA%E5%8C%96%E5%AD%A6/%E6%9C%89%E6%9C%BA%E5%8C%96%E5%AD%A6%E7%AC%94%E8%AE%B0.pdf",
+    "content": "",
+    "size": 87601930,
+    "searchText": "有机化学笔记 有机化学 有机化学 "
+  },
+  {
     "id": "医学文献管理与检索/笔记整理（管理1为P1-P28，管理2为P29-P93）.pdf",
     "category": "医学文献管理与检索",
     "section": "医学文献管理与检索",
@@ -1797,6 +1893,30 @@ export const notes = [
     "content": "",
     "size": 11646631,
     "searchText": "笔记整理（管理1为p1-p28，管理2为p29-p93） 医学文献管理与检索 医学文献管理与检索 "
+  },
+  {
+    "id": "系统解剖学/系统解剖学 2025-02-07 22.21.pdf",
+    "category": "系统解剖学",
+    "section": "系统解剖学",
+    "title": "系统解剖学 2025-02-07 22.21",
+    "fileName": "系统解剖学 2025-02-07 22.21.pdf",
+    "kind": "pdf",
+    "url": "library/%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%89%96%E5%AD%A6/%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%89%96%E5%AD%A6%202025-02-07%2022.21.pdf",
+    "content": "",
+    "size": 5969068,
+    "searchText": "系统解剖学 2025-02-07 22.21 系统解剖学 系统解剖学 "
+  },
+  {
+    "id": "系统解剖学/系统解剖学 2025-02-09 19.48.pdf",
+    "category": "系统解剖学",
+    "section": "系统解剖学",
+    "title": "系统解剖学 2025-02-09 19.48",
+    "fileName": "系统解剖学 2025-02-09 19.48.pdf",
+    "kind": "pdf",
+    "url": "library/%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%89%96%E5%AD%A6/%E7%B3%BB%E7%BB%9F%E8%A7%A3%E5%89%96%E5%AD%A6%202025-02-09%2019.48.pdf",
+    "content": "",
+    "size": 2563008,
+    "searchText": "系统解剖学 2025-02-09 19.48 系统解剖学 系统解剖学 "
   },
   {
     "id": "series:循环系统\\02-专题图谱/心率失常",

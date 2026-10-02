@@ -23,6 +23,7 @@ const categoryMeta: Record<string, { code: string; description: string; accent: 
   毛概: { code: "MK", description: "理论体系与专题学习", accent: "#dc2626" },
   有机化学: { code: "OC", description: "烃、官能团与反应机理", accent: "#65a30d" },
   医学文献管理与检索: { code: "LR", description: "文献检索、管理与笔记方法", accent: "#0284c7" },
+  系统解剖学: { code: "SA", description: "人体结构、系统与影像", accent: "#c026d3" },
 };
 
 // Narrative system chapters. `id` doubles as the scroll anchor and the
